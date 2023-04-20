@@ -11,5 +11,3 @@ response = request.urlopen(URL)
 logger.info(f" response -----> {response}")
 # print(f" response -----> {response.__dict__}")
 print(f" response -----> {response.read()}")
-
-

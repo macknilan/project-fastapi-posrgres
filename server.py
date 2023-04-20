@@ -11,12 +11,7 @@ def application(env, start_response):
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template("index.html")
 
-    html = template.render(
-        {
-            "title": "Servidor python con Jinja2",
-            "name": "Rodolfo"
-        }
-    )
+    html = template.render({"title": "Servidor python con Jinja2", "name": "Rodolfo"})
 
     return [bytes(html, "utf-8")]
 
