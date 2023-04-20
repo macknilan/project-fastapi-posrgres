@@ -167,7 +167,7 @@ class UserReviewResponseModel(ResponseModel):
     """
     id: int
     user_id: int
-    movie_id: int
+    movie: MoviesResponseModel
     review: str
     score: int
 
