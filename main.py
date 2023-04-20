@@ -166,12 +166,12 @@ async def create_movie(user_review: UserReviewRequestModel):
     status_code=status.HTTP_200_OK,
     summary="Get all reviews by the users of the movies."
 )
-async def get_reviews():
+async def get_reviews(page: int = 1, limit: int = 10):
     """LISTAR LA TABLA -UserReview-
 
     :return:
     """
-    reviews = UserReview.select()  # SELECT * FROM user_reviews
+    reviews = UserReview.select().paginate(page, limit)  # SELECT * FROM user_reviews
 
     return [user_review for user_review in reviews]
 
@@ -234,6 +234,37 @@ async def update_review(
     user_review.score = review_request.score
 
     user_review.save()
+
+    return user_review
+
+
+@app.delete(
+    "/reviews/{review_id}",
+    response_model=UserReviewResponseModel,
+    status_code=status.HTTP_200_OK,
+    summary="Delete the user movie review by ID"
+)
+async def update_review(
+    review_id: Annotated[int, Path(
+        gt=0,
+        title="The ID of the review.",
+        description="This is the ID user review. It's required.",
+        example=1
+    )]
+):
+    """Eliminar -UserReview- MEDIANTE PARÁMETRO
+
+    :return:
+    """
+    user_review = UserReview.select().where(UserReview.id == review_id).first()
+
+    if user_review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Review not fount."
+        )
+
+    user_review.delete_instance()
 
     return user_review
 
