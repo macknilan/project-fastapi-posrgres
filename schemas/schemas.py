@@ -27,23 +27,24 @@ class ResponseModel(BaseModel):
     MODELO PARA HEREDAR LA CLASE A LOS DEMÁS MODELOS
     CONVERTIR DE MODELOS DE PEEWEE A MODELOS DE PYDANTIC
     """
+
     class Config:
         """
         CONVERTIR DE MODELOS DE PEEWEE A MODELOS DE PYDANTIC
         """
+
         orm_mode = True
         getter_dict = PeeweeGetterDict
 
 
-class ReviewValidator():
+class ReviewValidator:
     """CLASE HEREDABLE PARA VALIDAR EL ATRIBUTO -score- DE LA TABLA -UserReview-"""
+
     @validator("score")
     def score_is_valid(cls, v):
         if 1 <= v <= 5:
             # if v >= 1 and v <= 5:
-            raise ValueError(
-                "Score debe de estar en el rango de 1 a 5."
-            )
+            raise ValueError("Score debe de estar en el rango de 1 a 5.")
         return v
 
 
@@ -100,11 +101,13 @@ class UserResponseModel(ResponseModel):
     """
     MODELO PARA VALIDAR RESPONSE RESPUESTA DE USUARIO
     """
+
     id: int
     username: str
 
 
 # MOVIES 👇
+
 
 class MoviesRequestModel(BaseModel):
     """
@@ -124,29 +127,24 @@ class MoviesResponseModel(ResponseModel):
     """
     MODELO PARA VALIDAR RESPONSE RESPUESTA DE MOVIES
     """
+
     id: int
     title: str
 
 
 # REVIEWS 👇
 
+
 class UserReviewRequestModel(BaseModel, ReviewValidator):
     """
     CLASE PARA VALIDAR REQUEST -UserReview- CAMPOS OBLIGATORIOS
     """
+
     user_id: int = Field(
-        title="Id user",
-        description="ID of the user",
-        gt=0,
-        le=100,
-        example=1
+        title="Id user", description="ID of the user", gt=0, le=100, example=1
     )
     movie_id: int = Field(
-        title="Id Movie",
-        description="ID of the movie",
-        gt=0,
-        le=100,
-        example=1
+        title="Id Movie", description="ID of the movie", gt=0, le=100, example=1
     )
     review: str = Field(
         title="Review",
@@ -165,6 +163,7 @@ class UserReviewResponseModel(ResponseModel):
     """
     CLASE PARA VALIDAR RESPONSE -UserReview-
     """
+
     id: int
     user_id: int
     movie: MoviesResponseModel
@@ -176,6 +175,7 @@ class UserReviewRequestPutModel(BaseModel, ReviewValidator):
     """
     CLASE PARA VALIDAR PUT REQUEST -UserReview-
     """
+
     review: str = Field(
         title="Review",
         description="Movie review",
@@ -187,13 +187,3 @@ class UserReviewRequestPutModel(BaseModel, ReviewValidator):
         title="Score movie",
         description="Score of the movie",
     )
-
-
-
-
-
-
-
-
-
-

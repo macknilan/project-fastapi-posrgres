@@ -1,7 +1,7 @@
 from typing import Annotated
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from models.database import db_cnx
 
 from models.database import User
@@ -19,9 +19,9 @@ logger.setLevel(logging.INFO)
 
 app = FastAPI(
     # root_path="/api/v1",
-    openapi_url="/api/v1/openapi.json",
+    # openapi_url="/openapi.json",
     title="FastApi Test",
-    version="0.0.1",
+    version="0.1",
     description="My description",
     contact={"name": "mack", "url": "http://mack.host"},
     license_info={
@@ -30,10 +30,14 @@ app = FastAPI(
     },
 )
 
+api_vx = APIRouter(prefix="/api/v1")
 
-app.include_router(users.router)
-app.include_router(movies.router)
-app.include_router(reviews.router)
+
+api_vx.include_router(users.router)
+api_vx.include_router(movies.router)
+api_vx.include_router(reviews.router)
+
+app.include_router(api_vx)
 
 
 @app.on_event("startup")
@@ -59,4 +63,3 @@ def shutdown():
         logger.info(f"db_cnx ---> {db_cnx}")
         print("closing...")
         db_cnx.close()
-
