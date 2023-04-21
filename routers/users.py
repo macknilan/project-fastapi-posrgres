@@ -103,6 +103,7 @@ async def get_reviews(user_id: int = Cookie(None)):
 
     :return:
     """
+    # TODO: Return token
     user = User.select().where(User.id == user_id).first()
     if user is None:
         raise HTTPException(
