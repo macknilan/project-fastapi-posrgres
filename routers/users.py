@@ -1,13 +1,13 @@
 """
 Router for Users
 """
-from typing import Annotated
-from fastapi import status, HTTPException, APIRouter, Depends, Response
+from typing import Annotated, List
+from fastapi import status, HTTPException, APIRouter, Depends, Response, Cookie
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from argon2 import PasswordHasher, exceptions
 
 from models.database import User, Movie, UserReview
-from schemas.schemas import UserResponseModel, UserRequestModel
+from schemas.schemas import UserResponseModel, UserRequestModel, UserReviewResponseModel
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -89,9 +89,27 @@ async def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)],
         )
 
 
+@router.get(
+    "/reviews",
+    response_model=List[UserReviewResponseModel],
+    summary="For logged user get de reviews of movies by the cookie.",
+    status_code=status.HTTP_200_OK
+)
+async def get_reviews(user_id: int = Cookie(None)):
+    """SERVICIO PARA OBTENER LAS RESEÑAS DE LAS PELÍCULAS
+    SI LA COOKIE ID DEL USUARIO ESTABLECIDA ANTES SE SE ENCUENTRA
 
+    :param user_id:
 
+    :return:
+    """
+    user = User.select().where(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(
+            status_code=404, detail="User not found."
+        )
 
+    return [user_review for user_review in user.reviews]
 
 
 
