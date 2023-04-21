@@ -2,7 +2,7 @@
 Router for Users
 """
 from typing import Annotated
-from fastapi import status, HTTPException, APIRouter, Depends
+from fastapi import status, HTTPException, APIRouter, Depends, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from argon2 import PasswordHasher, exceptions
 
@@ -41,9 +41,20 @@ async def create_user(user: UserRequestModel):
     return user
 
 
-@router.post("/login", response_model=UserResponseModel)
-async def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+@router.post(
+    "/login",
+    response_model=UserResponseModel,
+    summary="Basic Login."
+)
+async def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)], response: Response):
+    """SERVICIO DE BASIC LOGIN
 
+    :param response:
+
+    :param credentials:
+
+    :return:
+    """
     user = User.select().where(User.username == credentials.username).first()
     if user is None:
         raise HTTPException(
@@ -61,6 +72,8 @@ async def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)])
             hash_pass: str = User.create_password(user.password)
             user = User.create(username=user.username, password=hash_pass, email=user.email)
 
+        # TODO: Mejorar por seguridad la forma en guardar la cookie
+        response.set_cookie(key="user_id", value=user.id)
         return user
     except exceptions.VerifyMismatchError as match_error:
         raise HTTPException(
