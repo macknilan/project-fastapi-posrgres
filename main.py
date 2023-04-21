@@ -1,4 +1,9 @@
-from typing import Annotated
+"""
+Script de FastAPI
+In Python 3.10
+Run:
+    uvicorn main:app --reload
+"""
 import logging
 
 from fastapi import FastAPI, APIRouter
@@ -18,8 +23,7 @@ logger.setLevel(logging.INFO)
 
 
 app = FastAPI(
-    # root_path="/api/v1",
-    # openapi_url="/openapi.json",
+    openapi_url="/api/v1/openapi.json",
     title="FastApi Test",
     version="0.1",
     description="My description",
