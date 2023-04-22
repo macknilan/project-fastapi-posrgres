@@ -6,7 +6,8 @@ Run:
 """
 import logging
 
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Security, Depends, status, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from models.database import db_cnx
 
 from models.database import User
@@ -36,10 +37,39 @@ app = FastAPI(
 
 api_vx = APIRouter(prefix="/api/v1")
 
-
+# ROUTERS
 api_vx.include_router(users.router)
 api_vx.include_router(movies.router)
 api_vx.include_router(reviews.router)
+
+
+@api_vx.post(
+    "/auth",
+    summary="Servicio para OAuth2",
+    status_code=status.HTTP_200_OK
+)
+async def auth(data: OAuth2PasswordRequestForm = Depends()):
+    """
+    FUNCIÓN PARA UTILIZAR AOUTH2 EN EL PROYECTO
+
+    `:param data:`
+
+    `:return:`
+    """
+    user = User.authenticate(data.username, data.password)
+
+    if user:
+        return {
+            "username": data.username,
+            "password": data.password
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User or Password wrong",
+            headers={"www-Authenticate": "Beraer"}
+        )
+
 
 app.include_router(api_vx)
 

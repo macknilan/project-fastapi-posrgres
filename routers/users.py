@@ -6,7 +6,7 @@ from fastapi import status, HTTPException, APIRouter, Depends, Response, Cookie
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from argon2 import PasswordHasher, exceptions
 
-from models.database import User, Movie, UserReview
+from models.database import User
 from schemas.schemas import UserResponseModel, UserRequestModel, UserReviewResponseModel
 
 router = APIRouter(prefix="/users", tags=["Users"])

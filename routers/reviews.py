@@ -36,7 +36,7 @@ async def create_movie(user_review: UserReviewRequestModel):
         raise HTTPException(status_code=404, detail="Movie not fount.")
 
     user_review = UserReview.create(
-        user_id=user_review.user_id,
+        user_id=user_review.user_id,  # OWNER
         movie_id=user_review.movie_id,
         review=user_review.review,
         score=user_review.score,

@@ -1,7 +1,24 @@
+"""
+FILE OF DATABASE
+"""
 import datetime
+import logging
 
 from peewee import *
-from argon2 import PasswordHasher
+from fastapi import HTTPException
+from argon2 import PasswordHasher, exceptions
+
+# CREATE A LOGGER
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# CREATE A HANDLER TO OUTPUT THE LOGS TO THE CONSOLE
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+# ADD THE HANDLER TO THE LOGGER
+logger.addHandler(console_handler)
+
 
 db_cnx = PostgresqlDatabase(
     "fast_api_db",
@@ -13,7 +30,6 @@ db_cnx = PostgresqlDatabase(
 
 
 # MODELS
-
 
 class User(Model):
     """
@@ -74,9 +90,52 @@ class User(Model):
         table_name = "users"
 
     @classmethod
+    def authenticate(cls, username, password):
+        """
+        CLASS METHOD PARA AUTENTICAR EL USUARIO
+
+        `:param username:`
+
+        `:param password:`
+
+        `:return:`
+
+        """
+        user = cls.select().where(User.username == username).first()
+        verif: bool = False
+        ph = PasswordHasher()
+        try:
+            verif = ph.verify(user.password, password)
+            # Now that we have the cleartext password,
+            # check the hash's parameters and if outdated,
+            # rehash the user's password in the database.
+            if ph.check_needs_rehash(user.password):
+                hash_pass: str = cls.create_password(user.password)
+                user = User.create(username=user.username, password=hash_pass, email=user.email)
+
+        except exceptions.VerifyMismatchError as match_error:
+            logger.info(f"{match_error}")
+            # raise HTTPException(
+            #     status_code=404, detail="Except User or Password wrong."
+            # )
+        except exceptions.VerificationError as verif_error:
+            logger.info(f"{verif_error}")
+            # raise HTTPException(
+            #     status_code=404, detail="Except User or Password wrong."
+            # )
+        except exceptions.InvalidHash as invalid_error:
+            logger.info(f"{invalid_error}")
+            # raise HTTPException(
+            #     status_code=404, detail="Except User or Password wrong."
+            # )
+
+        if user and verif:
+            return user
+
+    @classmethod
     def create_password(cls, password: str) -> str:
         """
-        CLASS FOR HASHING PASSWORD WITH -argon2-
+        CLASS METHOD FOR HASHING PASSWORD WITH -argon2-
         """
         ph = PasswordHasher()
         pass_hash = ph.hash(password)
