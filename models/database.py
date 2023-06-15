@@ -113,21 +113,14 @@ class User(Model):
                 hash_pass: str = cls.create_password(user.password)
                 user = User.create(username=user.username, password=hash_pass, email=user.email)
 
+        except AttributeError as none_type_error:
+            logger.info(f"{none_type_error}")
         except exceptions.VerifyMismatchError as match_error:
             logger.info(f"{match_error}")
-            # raise HTTPException(
-            #     status_code=404, detail="Except User or Password wrong."
-            # )
         except exceptions.VerificationError as verif_error:
             logger.info(f"{verif_error}")
-            # raise HTTPException(
-            #     status_code=404, detail="Except User or Password wrong."
-            # )
         except exceptions.InvalidHash as invalid_error:
             logger.info(f"{invalid_error}")
-            # raise HTTPException(
-            #     status_code=404, detail="Except User or Password wrong."
-            # )
 
         if user and verif:
             return user

@@ -56,22 +56,22 @@ class UserRequestModel(BaseModel):
     CLASE PARA VALIDAR REQUEST -User- CAMPOS OBLIGATORIOS
     """
 
+    username: str = Field(
+        title="User name",
+        description="User name",
+        min_length=8,
+        max_length=150,
+        example="john_doe",
+    )
+    email: EmailStr = Field(
+        example="johndoe@mail.com", title="Email", description="Email user"
+    )
     password: str = Field(
         title="Password",
         description="Password user",
         min_length=8,
         max_length=128,
         example="contrasenas",
-    )
-    username: str = Field(
-        title="User name",
-        description="User name",
-        min_length=8,
-        max_length=150,
-        example="jhon_doe",
-    )
-    email: EmailStr = Field(
-        example="johndoe@mail.com", title="Email", description="Email user"
     )
     # first_name: str = Field(
     #     None,
@@ -90,7 +90,7 @@ class UserRequestModel(BaseModel):
 
     @validator("email")
     def email_is_valid(cls, v):
-        if 8 <= len(v) <= 255:
+        if not 8 <= len(v) <= 255:
             raise ValueError(
                 "Email must be at least of 8 characters and max 255 characters"
             )

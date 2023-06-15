@@ -2,12 +2,13 @@
 Router for Users
 """
 from typing import Annotated, List
-from fastapi import status, HTTPException, APIRouter, Depends, Response, Cookie
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
 from argon2 import PasswordHasher, exceptions
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from models.database import User
-from schemas.schemas import UserResponseModel, UserRequestModel, UserReviewResponseModel
+from schemas.schemas import UserRequestModel, UserResponseModel, UserReviewResponseModel
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -110,13 +111,5 @@ async def get_reviews(user_id: int = Cookie(None)):
             status_code=404, detail="User not found."
         )
 
+    # return list(user.reviews)
     return [user_review for user_review in user.reviews]
-
-
-
-
-
-
-
-
-

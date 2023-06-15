@@ -6,15 +6,12 @@ Run:
 """
 import logging
 
-from fastapi import FastAPI, APIRouter, Security, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from models.database import db_cnx
 
-from models.database import User
-from models.database import Movie
-from models.database import UserReview
-
-from routers import movies, users, reviews
+from models.database import Movie, User, UserReview, db_cnx
+from routers import movies, reviews, users
+from shared import common
 
 logger = logging.getLogger(__name__)  # Set up a logger object
 handler = logging.StreamHandler()  # Add a stream handler to the logger object
@@ -50,7 +47,7 @@ api_vx.include_router(reviews.router)
 )
 async def auth(data: OAuth2PasswordRequestForm = Depends()):
     """
-    FUNCIÓN PARA UTILIZAR AOUTH2 EN EL PROYECTO
+    FUNCIÓN PARA AUTENTICAR AOUTH2 EN EL PROYECTO
 
     `:param data:`
 
@@ -60,14 +57,14 @@ async def auth(data: OAuth2PasswordRequestForm = Depends()):
 
     if user:
         return {
-            "username": data.username,
-            "password": data.password
+            "access_token": common.create_access_token(user),
+            "token_type": "eBearer"
         }
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User or Password wrong",
-            headers={"www-Authenticate": "Beraer"}
+            headers={"www-Authenticate": "Bearer"}
         )
 
 
