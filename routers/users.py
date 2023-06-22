@@ -1,14 +1,16 @@
 """
 Router for Users
 """
-from typing import Annotated, List
+from typing import Annotated, List, Dict, Any
 
 from argon2 import PasswordHasher, exceptions
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from peewee import CharField
 
 from models.database import User
 from schemas.schemas import UserRequestModel, UserResponseModel, UserReviewResponseModel
+from shared.common import get_current_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -89,7 +91,7 @@ async def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)],
             status_code=404, detail=f"{invalid_error}"
         )
 
-
+"""
 @router.get(
     "/reviews",
     response_model=List[UserReviewResponseModel],
@@ -97,14 +99,13 @@ async def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)],
     status_code=status.HTTP_200_OK
 )
 async def get_reviews(user_id: int = Cookie(None)):
-    """SERVICIO PARA OBTENER LAS RESEÑAS DE LAS PELÍCULAS
+    SERVICIO PARA OBTENER LAS RESEÑAS DE LAS PELÍCULAS
     SI LA COOKIE ID DEL USUARIO ESTABLECIDA ANTES SE SE ENCUENTRA
 
     :param user_id:
 
     :return:
-    """
-    # TODO: Return token
+    
     user = User.select().where(User.id == user_id).first()
     if user is None:
         raise HTTPException(
@@ -112,4 +113,22 @@ async def get_reviews(user_id: int = Cookie(None)):
         )
 
     # return list(user.reviews)
+    return [user_review for user_review in user.reviews]
+"""
+
+
+@router.get(
+    "/reviews",
+    response_model=List[UserReviewResponseModel],
+    summary="For logged user get de reviews of movies by the token.",
+    status_code=status.HTTP_200_OK
+)
+async def get_reviews(user: Annotated[User, Depends(get_current_user)]) -> dict[str, Any]:
+    """SERVICIO PARA OBTENER LAS RESEÑAS DE LAS PELÍCULAS
+    POR MEDIO DE UN TOKEN
+
+    :param :
+
+    :return:
+    """
     return [user_review for user_review in user.reviews]

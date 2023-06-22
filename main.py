@@ -58,7 +58,7 @@ async def auth(data: OAuth2PasswordRequestForm = Depends()):
     if user:
         return {
             "access_token": common.create_access_token(user),
-            "token_type": "eBearer"
+            "token_type": "Bearer"
         }
     else:
         raise HTTPException(
