@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="sdkUUID" value="2d2487c3-e8d9-47d9-9227-81924aff3061" />
+  </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (fastapi_services_cf)" project-jdk-type="Python SDK" />
 </project>

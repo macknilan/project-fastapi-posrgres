@@ -139,10 +139,6 @@ class UserReviewRequestModel(BaseModel, ReviewValidator):
     """
     CLASE PARA VALIDAR REQUEST -UserReview- CAMPOS OBLIGATORIOS
     """
-
-    user_id: int = Field(
-        title="Id user", description="ID of the user", gt=0, le=100, example=1
-    )
     movie_id: int = Field(
         title="Id Movie", description="ID of the movie", gt=0, le=100, example=1
     )

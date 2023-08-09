@@ -3,7 +3,8 @@ Router for Movies Reviews
 """
 from typing import Annotated
 
-from fastapi import status, HTTPException, APIRouter, Path
+from fastapi import status, HTTPException, APIRouter, Path, Depends
+from shared.common import get_current_user
 
 from models.database import User, Movie, UserReview
 from schemas.schemas import (
@@ -21,22 +22,19 @@ router = APIRouter(prefix="/reviews", tags=["Reviews"])
     status_code=status.HTTP_200_OK,
     response_model=UserReviewResponseModel,
 )
-async def create_movie(user_review: UserReviewRequestModel):
+async def create_movie(user_review: UserReviewRequestModel, user: Annotated[User, Depends(get_current_user)]):
     """CREAR REVIEW DE PELÍCULAS
 
+    :param user:
     :param user_review:
 
-    :return:
+    :return dict[str, Union[int, str]]:
     """
-    # VERIFICAR SI EL USUARIO EXISTE
-    if User.select().where(User.id == user_review.user_id).first() is None:
-        raise HTTPException(status_code=404, detail="User not fount.")
-
     if Movie.select().where(Movie.id == user_review.movie_id).first() is None:
         raise HTTPException(status_code=404, detail="Movie not fount.")
 
     user_review = UserReview.create(
-        user_id=user_review.user_id,  # OWNER
+        user_id=user.id,  # OWNER
         movie_id=user_review.movie_id,
         review=user_review.review,
         score=user_review.score,

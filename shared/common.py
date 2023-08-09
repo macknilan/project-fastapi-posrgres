@@ -63,6 +63,11 @@ def decode_access_token(token: str):
 
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    """
+    VERIFICAR SI EL USUARIO EXISTE
+    :param token:
+    :return User:
+    """
     data = decode_access_token(token)
     if data:
         return User.select().where(User.id == data["user_id"]).first()
